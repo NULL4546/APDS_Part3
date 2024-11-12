@@ -1,8 +1,10 @@
-// server.js
+// Required modules
+const https = require('https');
+const fs = require('fs');
+
 // Load environment variables from .env file
 require('dotenv').config();
 
-const dotenv = require('dotenv');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -18,14 +20,18 @@ const authenticateToken = require('./middleware/authMiddleware');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-console.log("Attempting to connect to MongoDB...");
+// Load SSL certificate and key
+const privateKey = fs.readFileSync('./keys/private-key.pem', 'utf8');
+const certificate = fs.readFileSync('./keys/certificate.pem', 'utf8');
+const credentials = { key: privateKey, cert: certificate };
+
 // MongoDB connection
+console.log("Attempting to connect to MongoDB...");
 mongoose.connect('mongodb+srv://dbUser1:XbCYdGiwojecrDEM@cluster0.yemzrh6.mongodb.net/')
   .then(() => console.log("Connected to MongoDB"))
   .catch(error => console.log("MongoDB connection error:", error));
 
-  
-// Define your User schema (make sure it matches your existing schema)
+// Define your User schema
 const userSchema = new mongoose.Schema({
   username: String,
   password: String,
@@ -37,7 +43,7 @@ const User = mongoose.model('User', userSchema);
 
 // CORS configuration
 const corsOptions = {
-  origin: 'http://localhost:3000', 
+  origin: 'http://localhost:3000',
   methods: ['GET', 'POST'],
   credentials: true,
 };
@@ -55,7 +61,6 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-
 // Registration endpoint
 app.post('/register', async (req, res) => {
   const { username, password } = req.body;
@@ -69,16 +74,12 @@ app.post('/register', async (req, res) => {
   }
 
   try {
-    // Check if username already exists
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ error: 'Username already exists' });
     }
 
-    // Hash and salt the password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create and save new user
     const newUser = new User({ username, password: hashedPassword });
     await newUser.save();
 
@@ -103,7 +104,6 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Generate JWT token
     const token = generateToken(user);
     res.status(200).json({ message: 'Login successful', token });
   } catch (error) {
@@ -115,7 +115,6 @@ app.post('/login', async (req, res) => {
 app.post('/process-payment', authenticateToken, async (req, res) => {
   const { cardNumber, expiryDate, cvv } = req.body;
 
-  // Input validation (additional security on backend)
   const cardNumberRegex = /^\d{16}$/;
   const expiryDateRegex = /^(0[1-9]|1[0-2])\/?([0-9]{2})$/;
   const cvvRegex = /^\d{3,4}$/;
@@ -131,10 +130,6 @@ app.post('/process-payment', authenticateToken, async (req, res) => {
   }
 
   try {
-    // Simulate payment processing logic
-    // In a real-world scenario, integrate with a payment gateway like Stripe or PayPal
-
-    // For demonstration, we'll assume the payment is always successful
     res.status(200).json({ success: true, message: 'Payment processed successfully!' });
   } catch (error) {
     console.error('Payment processing error:', error);
@@ -142,7 +137,11 @@ app.post('/process-payment', authenticateToken, async (req, res) => {
   }
 });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on https://localhost:${PORT}`);
+// Create and start the HTTPS server
+const httpsServer = https.createServer(credentials, app);
+
+httpsServer.listen(PORT, () => {
+  console.log(`Server is running securely on https://localhost:${PORT}`);
 });
+
+
