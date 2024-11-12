@@ -1,0 +1,64 @@
+/* src/components/Payments.css */
+.container {
+  max-width: 400px;
+  margin: 50px auto; /* Center the container */
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff; /* Changed to white for contrast */
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px; /* Added margin for spacing */
+}
+
+form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px; /* Space between form elements */
+}
+
+label {
+  font-weight: bold; /* Bold labels for better visibility */
+}
+
+input {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: border-color 0.3s; /* Smooth transition for focus */
+}
+
+input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+button {
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s; /* Smooth transition for hover */
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.error {
+  color: red;
+  text-align: center;
+}
+
+.success {
+  color: green;
+  text-align: center;
+}

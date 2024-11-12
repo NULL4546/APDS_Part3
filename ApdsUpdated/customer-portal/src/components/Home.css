@@ -1,0 +1,20 @@
+/* src/components/Home.css */
+.home-container {
+    max-width: 600px; /* Set a max width for the content */
+    margin: 50px auto; /* Center the container */
+    text-align: center; /* Center text */
+    padding: 20px; /* Add some padding */
+  }
+  
+  h1 {
+    color: #333; /* Title color */
+    margin-bottom: 15px; /* Space below the title */
+    line-height: 1.2; /* Adjust line height for better spacing */
+  }
+  
+  p {
+    color: #666; /* Description color */
+    margin-bottom: 20px; /* Space below the paragraph */
+    line-height: 1.4; /* Adjust line height for better spacing */
+  }
+  
